@@ -1,0 +1,1472 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>スシロー価格計算機 / Sushiro Price Calculator / 寿司郎价格计算器</title>
+    <style>
+        :root {
+            --sushiro-red: #e60012;
+            --sushiro-dark-red: #c5000f;
+            --sushiro-light-red: #ff7a7a;
+            --sushiro-beige: #fff5e6;
+            --sushiro-dark-beige: #ffe8cc;
+            --sushiro-black: #333333;
+            --sushiro-white: #ffffff;
+        }
+        
+        body {
+            font-family: 'Arial', 'Hiragino Sans', 'Meiryo', sans-serif;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 0;
+            background-color: var(--sushiro-beige);
+            color: var(--sushiro-black);
+        }
+        
+        .container {
+            padding: 20px;
+            background-color: var(--sushiro-white);
+            border-radius: 10px;
+            margin: 20px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        header {
+            background-color: var(--sushiro-red);
+            color: var(--sushiro-white);
+            padding: 15px 0;
+            text-align: center;
+            border-radius: 10px 10px 0 0;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::after {
+            content: "";
+            position: absolute;
+            bottom: -15px;
+            left: 0;
+            right: 0;
+            height: 30px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M1200,0H0V120H1200V0Z" fill="%23e60012"/></svg>') center/cover no-repeat;
+        }
+        
+        h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+        
+        .language-selector {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+            background-color: var(--sushiro-dark-beige);
+            padding: 8px;
+            border-radius: 50px;
+        }
+        
+        .language-btn {
+            background: none;
+            border: none;
+            color: var(--sushiro-black);
+            cursor: pointer;
+            padding: 5px 15px;
+            margin: 0 3px;
+            font-size: 14px;
+            border-radius: 50px;
+            transition: all 0.3s;
+        }
+        
+        .language-btn.active {
+            background-color: var(--sushiro-red);
+            color: var(--sushiro-white);
+            font-weight: bold;
+        }
+        
+        /* 碟子样式 - 恢复原始样式 */
+        .plate {
+            background-color: var(--sushiro-white);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--sushiro-dark-beige);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .plate::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background-color: var(--plate-color);
+        }
+        
+        .plate-info {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+        }
+        
+        .plate-color {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .white {
+            background-color: var(--sushiro-white);
+            border: 1px solid #ddd;
+            color: var(--sushiro-black);
+            --plate-color: #ddd;
+        }
+        
+        .silver {
+            background-color: #c0c0c0;
+            --plate-color: #c0c0c0;
+        }
+        
+        .red {
+            background-color: var(--sushiro-red);
+            --plate-color: var(--sushiro-red);
+        }
+        
+        .gold {
+            background-color: #ffd700;
+            --plate-color: #ffd700;
+        }
+        
+        .black {
+            background-color: var(--sushiro-black);
+            --plate-color: var(--sushiro-black);
+        }
+        
+        .plate-name {
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        
+        .plate-price {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .counter {
+            display: flex;
+            align-items: center;
+        }
+        
+        .counter-btn {
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 50%;
+            background-color: var(--sushiro-red);
+            color: var(--sushiro-white);
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        
+        .counter-btn:active {
+            background-color: var(--sushiro-dark-red);
+            transform: scale(0.95);
+        }
+        
+        .count {
+            margin: 0 12px;
+            min-width: 20px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        /* 其他商品选择部分 */
+        .menu-controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        select {
+            flex: 1;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: white;
+            font-size: 14px;
+        }
+        
+        .item-display {
+            background-color: var(--sushiro-white);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid var(--sushiro-dark-beige);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .item-display::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background-color: var(--sushiro-red);
+        }
+        
+        .item-info {
+            flex-grow: 1;
+        }
+        
+        .item-name {
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        
+        .item-price {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .selected-items {
+            margin-top: 20px;
+        }
+        
+        .selected-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .remove-btn {
+            color: var(--sushiro-red);
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .social-check {
+            background-color: var(--sushiro-white);
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border: 1px solid var(--sushiro-dark-beige);
+        }
+        
+        .social-question {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .social-options {
+            display: flex;
+            justify-content: space-around;
+        }
+        
+        .social-btn {
+            padding: 8px 15px;
+            border-radius: 20px;
+            border: 1px solid #ddd;
+            background-color: white;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .social-btn.active {
+            background-color: var(--sushiro-red);
+            color: white;
+            border-color: var(--sushiro-red);
+        }
+        
+        .social-note {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+            text-align: center;
+        }
+        
+        .total {
+            background-color: var(--sushiro-red);
+            color: var(--sushiro-white);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: bold;
+            margin: 25px 0 15px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+        
+        .price {
+            font-size: 24px;
+        }
+        
+        .note {
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            margin-top: 20px;
+            padding: 8px;
+            background-color: var(--sushiro-dark-beige);
+            border-radius: 5px;
+        }
+        
+        .multilingual {
+            display: none;
+        }
+        
+        .lang-zh, .lang-en, .lang-ja {
+            display: none;
+        }
+        
+        .lang-zh.active, .lang-en.active, .lang-ja.active {
+            display: block;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .scroll-to-top {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--sushiro-red);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>
+            <span class="multilingual lang-zh active">寿司郎价格计算器</span>
+            <span class="multilingual lang-en">Sushiro Price Calculator</span>
+            <span class="multilingual lang-ja">スシロー価格計算機</span>
+        </h1>
+    </header>
+    
+    <div class="container">
+        <div class="language-selector">
+            <button class="language-btn active" onclick="changeLanguage('zh')">中文</button>
+            <button class="language-btn" onclick="changeLanguage('en')">English</button>
+            <button class="language-btn" onclick="changeLanguage('ja')">日本語</button>
+        </div>
+        
+        <!-- 碟子部分 - 按价格从低到高排列 -->
+        <div class="plate">
+            <div class="plate-info">
+                <div class="plate-color white"></div>
+                <div>
+                    <div class="plate-name">
+                        <span class="multilingual lang-zh active">白碟</span>
+                        <span class="multilingual lang-en">White Plate</span>
+                        <span class="multilingual lang-ja">白皿</span>
+                    </div>
+                    <div class="plate-price">8元</div>
+                </div>
+            </div>
+            <div class="counter">
+                <button class="counter-btn" onclick="decrement('plate-white')">-</button>
+                <div id="plate-white-count" class="count">0</div>
+                <button class="counter-btn" onclick="increment('plate-white')">+</button>
+            </div>
+        </div>
+        
+        <div class="plate">
+            <div class="plate-info">
+                <div class="plate-color red"></div>
+                <div>
+                    <div class="plate-name">
+                        <span class="multilingual lang-zh active">红碟</span>
+                        <span class="multilingual lang-en">Red Plate</span>
+                        <span class="multilingual lang-ja">赤皿</span>
+                    </div>
+                    <div class="plate-price">10元</div>
+                </div>
+            </div>
+            <div class="counter">
+                <button class="counter-btn" onclick="decrement('plate-red')">-</button>
+                <div id="plate-red-count" class="count">0</div>
+                <button class="counter-btn" onclick="increment('plate-red')">+</button>
+            </div>
+        </div>
+        
+        <div class="plate">
+            <div class="plate-info">
+                <div class="plate-color silver"></div>
+                <div>
+                    <div class="plate-name">
+                        <span class="multilingual lang-zh active">银碟</span>
+                        <span class="multilingual lang-en">Silver Plate</span>
+                        <span class="multilingual lang-ja">銀皿</span>
+                    </div>
+                    <div class="plate-price">15元</div>
+                </div>
+            </div>
+            <div class="counter">
+                <button class="counter-btn" onclick="decrement('plate-silver')">-</button>
+                <div id="plate-silver-count" class="count">0</div>
+                <button class="counter-btn" onclick="increment('plate-silver')">+</button>
+            </div>
+        </div>
+        
+        <div class="plate">
+            <div class="plate-info">
+                <div class="plate-color gold"></div>
+                <div>
+                    <div class="plate-name">
+                        <span class="multilingual lang-zh active">金碟</span>
+                        <span class="multilingual lang-en">Gold Plate</span>
+                        <span class="multilingual lang-ja">金皿</span>
+                    </div>
+                    <div class="plate-price">20元</div>
+                </div>
+            </div>
+            <div class="counter">
+                <button class="counter-btn" onclick="decrement('plate-gold')">-</button>
+                <div id="plate-gold-count" class="count">0</div>
+                <button class="counter-btn" onclick="increment('plate-gold')">+</button>
+            </div>
+        </div>
+        
+        <div class="plate">
+            <div class="plate-info">
+                <div class="plate-color black"></div>
+                <div>
+                    <div class="plate-name">
+                        <span class="multilingual lang-zh active">黑碟</span>
+                        <span class="multilingual lang-en">Black Plate</span>
+                        <span class="multilingual lang-ja">黒皿</span>
+                    </div>
+                    <div class="plate-price">28元</div>
+                </div>
+            </div>
+            <div class="counter">
+                <button class="counter-btn" onclick="decrement('plate-black')">-</button>
+                <div id="plate-black-count" class="count">0</div>
+                <button class="counter-btn" onclick="increment('plate-black')">+</button>
+            </div>
+        </div>
+        
+        <!-- 其他商品使用下拉菜单选择 -->
+        <div class="menu-controls">
+            <select id="category-select">
+                <option value="">选择分类</option>
+                <option value="drink">饮料</option>
+                <option value="fried">炸物</option>
+                <option value="dessert">甜点</option>
+                <option value="noodle">面类</option>
+                <option value="chawanmushi">茶碗蒸</option>
+                <option value="side">小食</option>
+                <option value="sashimi">刺身</option>
+            </select>
+            
+            <select id="item-select">
+                <option value="">选择商品</option>
+                <!-- 商品选项将通过JavaScript动态加载 -->
+            </select>
+        </div>
+        
+        <div class="item-display" id="selected-item-display" style="display: none;">
+            <div class="item-info">
+                <div class="item-name" id="selected-item-name"></div>
+                <div class="item-price" id="selected-item-price"></div>
+            </div>
+            <div class="counter">
+                <button class="counter-btn" onclick="decrementSelectedItem()">-</button>
+                <div id="selected-item-count" class="count">0</div>
+                <button class="counter-btn" onclick="incrementSelectedItem()">+</button>
+            </div>
+        </div>
+        
+        <div class="selected-items" id="selected-items-list">
+            <!-- 已选商品列表将通过JavaScript动态生成 -->
+        </div>
+        
+        <div class="social-check">
+            <div class="social-question">
+                <span class="multilingual lang-zh active">为寿司郎在小红书点赞可减免茶位费</span>
+                <span class="multilingual lang-en">Like Sushiro on Xiaohongshu to waive tea fee</span>
+                <span class="multilingual lang-ja">小红书でスシローに「いいね」すると茶位料金が無料になります</span>
+            </div>
+            <div class="social-options">
+                <button id="social-yes" class="social-btn active" onclick="toggleSocial(true)">
+                    <span class="multilingual lang-zh active">已点赞</span>
+                    <span class="multilingual lang-en">Liked</span>
+                    <span class="multilingual lang-ja">いいね済み</span>
+                </button>
+                <button id="social-no" class="social-btn" onclick="toggleSocial(false)">
+                    <span class="multilingual lang-zh active">未点赞</span>
+                    <span class="multilingual lang-en">Not Liked</span>
+                    <span class="multilingual lang-ja">いいね未</span>
+                </button>
+            </div>
+            <div class="social-note">
+                <span class="multilingual lang-zh active">*未点赞将收取5元茶位费</span>
+                <span class="multilingual lang-en">*5 yuan tea fee will be charged if not liked</span>
+                <span class="multilingual lang-ja">*いいねしていない場合は5元の茶位料金がかかります</span>
+            </div>
+        </div>
+        
+        <div class="total">
+            <span class="multilingual lang-zh active">总计: <span id="total-price" class="price">0</span> 元</span>
+            <span class="multilingual lang-en">Total: <span id="total-price-en" class="price">0</span> yuan</span>
+            <span class="multilingual lang-ja">合計: <span id="total-price-ja" class="price">0</span> 元</span>
+        </div>
+
+        <div class="note">
+            <span class="multilingual lang-zh active">*中国地区限定价格 (仅供参考)</span>
+            <span class="multilingual lang-en">*China region prices (for reference only)</span>
+            <span class="multilingual lang-ja">*中国地区限定価格 (参考まで)</span>
+        </div>
+    </div>
+    
+    <div class="scroll-to-top" onclick="scrollToTop()">↑</div>
+    
+    <footer>
+        <span class="multilingual lang-zh active">© 2025 寿司郎计算器</span>
+        <span class="multilingual lang-en">© 2025 Sushiro Calculator</span>
+        <span class="multilingual lang-ja">© 2025 スシロー計算機</span>
+    </footer>
+
+    <script>
+        // 商品数据 (移除了碟子部分)
+        const menuItems = {
+            drink: [
+                { 
+                    id: 'drink-calpis', 
+                    name: {
+                        zh: '可尔必思',
+                        en: 'Calpis',
+                        ja: 'カルピス'
+                    }, 
+                    price: 8 
+                },
+                { 
+                    id: 'drink-grapefruit', 
+                    name: {
+                        zh: '酸甜西柚汁',
+                        en: 'Sweet & Sour Grapefruit Juice',
+                        ja: 'グレープフルーツジュース'
+                    }, 
+                    price: 8 
+                },
+                { 
+                    id: 'drink-kumquat', 
+                    name: {
+                        zh: '金桔柠檬汁',
+                        en: 'Kumquat Lemon Juice',
+                        ja: 'キンカンレモンジュース'
+                    }, 
+                    price: 8 
+                },
+                { 
+                    id: 'drink-americano', 
+                    name: {
+                        zh: '现磨美式',
+                        en: 'Freshly Brewed Americano',
+                        ja: 'アメリカーノ'
+                    }, 
+                    price: 10 
+                },
+                { 
+                    id: 'drink-latte', 
+                    name: {
+                        zh: '现磨拿铁',
+                        en: 'Freshly Brewed Latte',
+                        ja: 'カフェラテ'
+                    }, 
+                    price: 16 
+                },
+                { 
+                    id: 'drink-orange', 
+                    name: {
+                        zh: '100%NFC橙汁',
+                        en: '100% NFC Orange Juice',
+                        ja: '100%オレンジジュース'
+                    }, 
+                    price: 14 
+                },
+                { 
+                    id: 'drink-apple', 
+                    name: {
+                        zh: '100%NFC苹果汁',
+                        en: '100% NFC Apple Juice',
+                        ja: '100%アップルジュース'
+                    }, 
+                    price: 16 
+                },
+                { 
+                    id: 'drink-tsingtao', 
+                    name: {
+                        zh: '青岛啤酒(小瓶)',
+                        en: 'Tsingtao Beer (Small)',
+                        ja: '青島ビール(小瓶)'
+                    }, 
+                    price: 16 
+                },
+                { 
+                    id: 'drink-asahi', 
+                    name: {
+                        zh: '朝日啤酒',
+                        en: 'Asahi Beer',
+                        ja: 'アサヒビール'
+                    }, 
+                    price: 18 
+                },
+                { 
+                    id: 'drink-sake', 
+                    name: {
+                        zh: '日本酒',
+                        en: 'Japanese Sake',
+                        ja: '日本酒'
+                    }, 
+                    price: 18 
+                },
+                { 
+                    id: 'drink-lemon', 
+                    name: {
+                        zh: '柠檬湫海',
+                        en: 'Lemon Highball',
+                        ja: 'レモンハイボール'
+                    }, 
+                    price: 28 
+                },
+                { 
+                    id: 'drink-kakubin', 
+                    name: {
+                        zh: '角瓶嗨棒',
+                        en: 'Kakubin Highball',
+                        ja: '角瓶ハイボール'
+                    }, 
+                    price: 28 
+                }
+            ],
+            fried: [
+                { 
+                    id: 'fried-shrimp', 
+                    name: {
+                        zh: '软壳虾柚子胡椒天妇罗',
+                        en: 'Soft-shell Shrimp Yuzu Pepper Tempura',
+                        ja: '軟殻海老柚子胡椒天ぷら'
+                    }, 
+                    price: 16 
+                },
+                { 
+                    id: 'fried-octopus', 
+                    name: {
+                        zh: '炸章鱼块',
+                        en: 'Fried Octopus Pieces',
+                        ja: 'たこ唐揚げ'
+                    }, 
+                    price: 18 
+                },
+                { 
+                    id: 'fried-cartilage', 
+                    name: {
+                        zh: '炸鸡软骨',
+                        en: 'Fried Chicken Cartilage',
+                        ja: '鶏軟骨唐揚げ'
+                    }, 
+                    price: 18 
+                },
+                { 
+                    id: 'fried-tempura', 
+                    name: {
+                        zh: '炸虾天妇罗',
+                        en: 'Shrimp Tempura',
+                        ja: '海老天ぷら'
+                    }, 
+                    price: 20 
+                },
+                { 
+                    id: 'fried-wings', 
+                    name: {
+                        zh: '盐味炸鸡翼',
+                        en: 'Salt-flavored Fried Chicken Wings',
+                        ja: '塩味手羽先唐揚げ'
+                    }, 
+                    price: 24 
+                },
+                { 
+                    id: 'fried-salmon', 
+                    name: {
+                        zh: '香炸三文鱼腩翼',
+                        en: 'Fried Salmon Belly',
+                        ja: 'サーモン腹身唐揚げ'
+                    }, 
+                    price: 24 
+                }
+            ],
+            dessert: [
+                { 
+                    id: 'dessert-pudding', 
+                    name: {
+                        zh: '店内特制脆脆焦糖布丁',
+                        en: 'House Special Crispy Caramel Pudding',
+                        ja: '特製カラメルプリン'
+                    }, 
+                    price: 10 
+                },
+                { 
+                    id: 'dessert-mango', 
+                    name: {
+                        zh: '冰冻芒果',
+                        en: 'Frozen Mango',
+                        ja: '冷凍マンゴー'
+                    }, 
+                    price: 10 
+                },
+                { 
+                    id: 'dessert-milk', 
+                    name: {
+                        zh: '浓厚牛乳软冰淇淋',
+                        en: 'Rich Milk Soft Serve Ice Cream',
+                        ja: '濃厚牛乳ソフトクリーム'
+                    }, 
+                    price: 12 
+                },
+                { 
+                    id: 'dessert-strawberry', 
+                    name: {
+                        zh: '草莓味软冰淇淋',
+                        en: 'Strawberry Soft Serve Ice Cream',
+                        ja: 'いちごソフトクリーム'
+                    }, 
+                    price: 12 
+                },
+                { 
+                    id: 'dessert-double', 
+                    name: {
+                        zh: '双味软冰淇淋',
+                        en: 'Double Flavor Soft Serve Ice Cream',
+                        ja: 'ダブルソフトクリーム'
+                    }, 
+                    price: 12 
+                },
+                { 
+                    id: 'dessert-puff', 
+                    name: {
+                        zh: '绵绵布丁泡芙',
+                        en: 'Fluffy Pudding Cream Puff',
+                        ja: 'ふわふわプリンシュー'
+                    }, 
+                    price: 14 
+                },
+                { 
+                    id: 'dessert-dango', 
+                    name: {
+                        zh: '月见之宴抹茶团子配红豆泥冰淇淋',
+                        en: 'Moon Viewing Matcha Dango with Red Bean Ice Cream',
+                        ja: '月見抹茶団子あんこアイス'
+                    }, 
+                    price: 14 
+                },
+                { 
+                    id: 'dessert-mille', 
+                    name: {
+                        zh: '脆脆焦糖牛乳千层蛋糕',
+                        en: 'Crispy Caramel Milk Mille Crepe',
+                        ja: 'カラメルミルクミルクレープ'
+                    }, 
+                    price: 18 
+                },
+                { 
+                    id: 'dessert-strawberry-mille', 
+                    name: {
+                        zh: '草莓绵绵牛乳千层配冰淇淋',
+                        en: 'Fluffy Strawberry Milk Mille Crepe with Ice Cream',
+                        ja: 'いちごミルクレープアイス'
+                    }, 
+                    price: 26 
+                },
+                { 
+                    id: 'dessert-parfait', 
+                    name: {
+                        zh: 'QQ弹弹波波芒果芭菲',
+                        en: 'Chewy Mango Boba Parfait',
+                        ja: 'マンゴーパフェ'
+                    }, 
+                    price: 26 
+                }
+            ],
+            noodle: [
+                { 
+                    id: 'noodle-spicy', 
+                    name: {
+                        zh: '辛辣豚骨浓汤拉面配脆笋叉烧',
+                        en: 'Spicy Pork Bone Ramen with Crispy Bamboo Shoots and Chashu',
+                        ja: '辛とんこつラーメン'
+                    }, 
+                    price: 24 
+                },
+                { 
+                    id: 'noodle-pork', 
+                    name: {
+                        zh: '豚骨浓汤拉面配脆笋叉烧',
+                        en: 'Pork Bone Ramen with Crispy Bamboo Shoots and Chashu',
+                        ja: 'とんこつラーメン'
+                    }, 
+                    price: 24 
+                },
+                { 
+                    id: 'noodle-shrimp', 
+                    name: {
+                        zh: '虾味增浓汤拉面',
+                        en: 'Shrimp Miso Ramen',
+                        ja: '海老味噌ラーメン'
+                    }, 
+                    price: 24 
+                },
+                { 
+                    id: 'noodle-carp', 
+                    name: {
+                        zh: '鲩肉味噌汤',
+                        en: 'Grass Carp Miso Soup',
+                        ja: '鯛味噌汁'
+                    }, 
+                    price: 14 
+                },
+                { 
+                    id: 'noodle-fish', 
+                    name: {
+                        zh: '寿司郎特制鱼味增汤',
+                        en: 'Sushiro Special Fish Miso Soup',
+                        ja: '特製魚味噌汁'
+                    }, 
+                    price: 14 
+                },
+                { 
+                    id: 'noodle-udon', 
+                    name: {
+                        zh: '店内现煮鲜汤素乌冬',
+                        en: 'House-made Fresh Udon in Clear Broth',
+                        ja: '店内製うどん'
+                    }, 
+                    price: 12 
+                },
+                { 
+                    id: 'noodle-yam', 
+                    name: {
+                        zh: '温泉蛋山药泥乌冬',
+                        en: 'Udon with Onsen Egg and Grated Yam',
+                        ja: '山かけうどん'
+                    }, 
+                    price: 22 
+                },
+                { 
+                    id: 'noodle-tempura', 
+                    name: {
+                        zh: '店内现煮鲜汤炸虾天妇罗乌冬',
+                        en: 'House-made Fresh Udon with Shrimp Tempura',
+                        ja: '天ぷらうどん'
+                    }, 
+                    price: 22 
+                },
+                { 
+                    id: 'noodle-beef', 
+                    name: {
+                        zh: '店内现煮鲜汤牛肉乌冬',
+                        en: 'House-made Fresh Udon with Beef',
+                        ja: '牛肉うどん'
+                    }, 
+                    price: 24 
+                },
+                { 
+                    id: 'noodle-spicy-mixed', 
+                    name: {
+                        zh: '寿司郎特制激辛拌面',
+                        en: 'Sushiro Special Spicy Mixed Noodles',
+                        ja: '特製激辛まぜそば'
+                    }, 
+                    price: 18 
+                },
+                { 
+                    id: 'noodle-spicy-egg', 
+                    name: {
+                        zh: '辛辣豚骨浓汤拉面配糖心蛋',
+                        en: 'Spicy Pork Bone Ramen with Soft-boiled Egg',
+                        ja: '辛とんこつラーメン味玉'
+                    }, 
+                    price: 20 
+                },
+                { 
+                    id: 'noodle-pork-egg', 
+                    name: {
+                        zh: '豚骨浓汤拉面配糖心蛋',
+                        en: 'Pork Bone Ramen with Soft-boiled Egg',
+                        ja: 'とんこつラーメン味玉'
+                    }, 
+                    price: 20 
+                }
+            ],
+            chawanmushi: [
+                { 
+                    id: 'chawanmushi-umami', 
+                    name: {
+                        zh: '店内特制鲜味茶碗蒸',
+                        en: 'House Special Umami Chawanmushi',
+                        ja: '特製うま味茶碗蒸し'
+                    }, 
+                    price: 15 
+                },
+                { 
+                    id: 'chawanmushi-cold', 
+                    name: {
+                        zh: '店内特制鲜味冷茶碗蒸',
+                        en: 'House Special Cold Umami Chawanmushi',
+                        ja: '特製冷たい茶碗蒸し'
+                    }, 
+                    price: 15 
+                },
+                { 
+                    id: 'chawanmushi-eel', 
+                    name: {
+                        zh: '店内特制鳗鱼茶碗蒸',
+                        en: 'House Special Eel Chawanmushi',
+                        ja: '特製うなぎ茶碗蒸し'
+                    }, 
+                    price: 16 
+                },
+                { 
+                    id: 'chawanmushi-spicy', 
+                    name: {
+                        zh: '店内特制激辛肉酱茶碗蒸',
+                        en: 'House Special Spicy Meat Sauce Chawanmushi',
+                        ja: '特製激辛ミートソース茶碗蒸し'
+                    }, 
+                    price: 16 
+                },
+                { 
+                    id: 'chawanmushi-crab', 
+                    name: {
+                        zh: '店内特制蟹肉茶碗蒸',
+                        en: 'House Special Crab Meat Chawanmushi',
+                        ja: '特製かに茶碗蒸し'
+                    }, 
+                    price: 18 
+                },
+                { 
+                    id: 'chawanmushi-cold-crab', 
+                    name: {
+                        zh: '店内特制蟹肉冷茶碗蒸',
+                        en: 'House Special Cold Crab Meat Chawanmushi',
+                        ja: '特製冷たいかに茶碗蒸し'
+                    }, 
+                    price: 18 
+                }
+            ],
+            side: [
+                { 
+                    id: 'side-edamame', 
+                    name: {
+                        zh: '毛豆',
+                        en: 'Edamame',
+                        ja: '枝豆'
+                    }, 
+                    price: 8 
+                },
+                { 
+                    id: 'side-salad', 
+                    name: {
+                        zh: '姜味海鲜土豆沙律',
+                        en: 'Ginger-flavored Seafood Potato Salad',
+                        ja: '生姜風味シーフードポテトサラダ'
+                    }, 
+                    price: 10 
+                },
+                { 
+                    id: 'side-fries', 
+                    name: {
+                        zh: '黄金脆薯',
+                        en: 'Golden Crispy Fries',
+                        ja: 'ゴールデンフライ'
+                    }, 
+                    price: 10 
+                },
+                { 
+                    id: 'side-pumpkin', 
+                    name: {
+                        zh: '南瓜天妇罗',
+                        en: 'Pumpkin Tempura',
+                        ja: 'かぼちゃ天ぷら'
+                    }, 
+                    price: 10 
+                },
+                { 
+                    id: 'side-scallop', 
+                    name: {
+                        zh: '熟枫立贝天妇罗',
+                        en: 'Cooked Scallop Tempura',
+                        ja: '帆立貝天ぷら'
+                    }, 
+                    price: 10 
+                },
+                { 
+                    id: 'side-croquette', 
+                    name: {
+                        zh: '浓香牛肉可乐饼',
+                        en: 'Rich Beef Croquette',
+                        ja: '牛肉コロッケ'
+                    }, 
+                    price: 10 
+                },
+                { 
+                    id: 'side-mentaiko', 
+                    name: {
+                        zh: '黄金脆薯配明太子沙律酱',
+                        en: 'Golden Fries with Mentaiko Salad Dressing',
+                        ja: '明太子サラダポテト'
+                    }, 
+                    price: 12 
+                }
+            ],
+            sashimi: [
+                { 
+                    id: 'sashimi-snail', 
+                    name: {
+                        zh: '海螺刺身',
+                        en: 'Sweet Shrimp Sashimi',
+                        ja: '甘海老'
+                    }, 
+                    price: 18 
+                },
+                { 
+                    id: 'sashimi-tuna', 
+                    name: {
+                        zh: '金枪鱼两种刺身',
+                        en: 'Two Types of Tuna Sashimi',
+                        ja: 'まぐろ二種盛り'
+                    }, 
+                    price: 18 
+                },
+                { 
+                    id: 'sashimi-squid', 
+                    name: {
+                        zh: '鱿鱼刺身',
+                        en: 'Squid Sashimi',
+                        ja: 'いか刺身'
+                    }, 
+                    price: 18 
+                },
+                { 
+                    id: 'sashimi-scallop', 
+                    name: {
+                        zh: '北极贝刺身',
+                        en: 'Scallop Sashimi',
+                        ja: 'ほたて貝刺身'
+                    }, 
+                    price: 28 
+                },
+                { 
+                    id: 'sashimi-red-shrimp', 
+                    name: {
+                        zh: '赤虾刺身',
+                        en: 'Red Shrimp Sashimi',
+                        ja: '赤海老'
+                    }, 
+                    price: 36 
+                },
+                { 
+                    id: 'sashimi-bream', 
+                    name: {
+                        zh: '真鲷刺身',
+                        en: 'Red Sea Bream Sashimi',
+                        ja: '真鯛'
+                    }, 
+                    price: 38 
+                },
+                { 
+                    id: 'sashimi-six', 
+                    name: {
+                        zh: '六选刺身盛',
+                        en: 'Six Selection Sashimi Platter',
+                        ja: '六種盛り刺身'
+                    }, 
+                    price: 38 
+                },
+                { 
+                    id: 'sashimi-amberjack', 
+                    name: {
+                        zh: '红甘鱼刺身',
+                        en: 'Amberjack Sashimi',
+                        ja: 'かんぱち'
+                    }, 
+                    price: 38 
+                },
+                { 
+                    id: 'sashimi-salmon', 
+                    name: {
+                        zh: '生三文鱼刺身',
+                        en: 'Raw Salmon Sashimi',
+                        ja: '生サーモン'
+                    }, 
+                    price: 39 
+                }
+            ]
+        };
+
+        // 碟子数据 (按价格从低到高排序)
+        const plateItems = [
+            { id: 'plate-white', name: {zh: '白碟', en: 'White Plate', ja: '白皿'}, price: 8, color: 'white' },
+            { id: 'plate-red', name: {zh: '红碟', en: 'Red Plate', ja: '赤皿'}, price: 10, color: 'red' },
+            { id: 'plate-silver', name: {zh: '银碟', en: 'Silver Plate', ja: '銀皿'}, price: 15, color: 'silver' },
+            { id: 'plate-gold', name: {zh: '金碟', en: 'Gold Plate', ja: '金皿'}, price: 20, color: 'gold' },
+            { id: 'plate-black', name: {zh: '黑碟', en: 'Black Plate', ja: '黒皿'}, price: 28, color: 'black' }
+        ];
+
+        // 当前语言
+        let currentLanguage = 'zh';
+        
+        // 初始化计数和价格
+        const counts = {};
+        const prices = {};
+        
+        // 初始化碟子的计数和价格
+        plateItems.forEach(item => {
+            counts[item.id] = 0;
+            prices[item.id] = item.price;
+        });
+        
+        // 初始化其他商品的计数和价格
+        for (const category in menuItems) {
+            menuItems[category].forEach(item => {
+                counts[item.id] = 0;
+                prices[item.id] = item.price;
+            });
+        }
+        
+        let socialLike = true;
+        const teaFee = 5;
+        let selectedItemId = null;
+
+        // DOM元素
+        const categorySelect = document.getElementById('category-select');
+        const itemSelect = document.getElementById('item-select');
+        const selectedItemDisplay = document.getElementById('selected-item-display');
+        const selectedItemName = document.getElementById('selected-item-name');
+        const selectedItemPrice = document.getElementById('selected-item-price');
+        const selectedItemCount = document.getElementById('selected-item-count');
+        const selectedItemsList = document.getElementById('selected-items-list');
+
+        // 分类选择变化时更新商品选项
+        categorySelect.addEventListener('change', function() {
+            const category = this.value;
+            itemSelect.innerHTML = '<option value="">' + 
+                (currentLanguage === 'zh' ? '选择商品' : 
+                 currentLanguage === 'en' ? 'Select Item' : '商品を選択') + '</option>';
+            
+            if (category && menuItems[category]) {
+                menuItems[category].forEach(item => {
+                    const option = document.createElement('option');
+                    option.value = item.id;
+                    option.textContent = item.name[currentLanguage] || item.name.zh;
+                    itemSelect.appendChild(option);
+                });
+            }
+        });
+
+        // 商品选择变化时更新显示
+        itemSelect.addEventListener('change', function() {
+            const itemId = this.value;
+            if (itemId) {
+                selectedItemId = itemId;
+                const item = findItemById(itemId);
+                selectedItemName.textContent = item.name[currentLanguage] || item.name.zh;
+                selectedItemPrice.textContent = `${item.price}元`;
+                selectedItemCount.textContent = counts[itemId] || 0;
+                selectedItemDisplay.style.display = 'flex';
+            } else {
+                selectedItemDisplay.style.display = 'none';
+                selectedItemId = null;
+            }
+        });
+
+        // 增加选中商品数量
+        function incrementSelectedItem() {
+            if (selectedItemId) {
+                counts[selectedItemId]++;
+                updateSelectedItemDisplay();
+                updateSelectedItemsList();
+                calculateTotal();
+            }
+        }
+
+        // 减少选中商品数量
+        function decrementSelectedItem() {
+            if (selectedItemId && counts[selectedItemId] > 0) {
+                counts[selectedItemId]--;
+                updateSelectedItemDisplay();
+                updateSelectedItemsList();
+                calculateTotal();
+            }
+        }
+
+        // 碟子增加数量
+        function increment(id) {
+            counts[id]++;
+            document.getElementById(`${id}-count`).textContent = counts[id];
+            updateSelectedItemsList();
+            calculateTotal();
+        }
+
+        // 碟子减少数量
+        function decrement(id) {
+            if (counts[id] > 0) {
+                counts[id]--;
+                document.getElementById(`${id}-count`).textContent = counts[id];
+                updateSelectedItemsList();
+                calculateTotal();
+            }
+        }
+
+        // 更新选中商品的显示
+        function updateSelectedItemDisplay() {
+            if (selectedItemId) {
+                selectedItemCount.textContent = counts[selectedItemId];
+            }
+        }
+
+        // 更新已选商品列表
+        function updateSelectedItemsList() {
+            selectedItemsList.innerHTML = '';
+            
+            // 添加碟子
+            plateItems.forEach(item => {
+                if (counts[item.id] > 0) {
+                    addItemToList(item.id, item.name[currentLanguage] || item.name.zh, item.price, counts[item.id]);
+                }
+            });
+            
+            // 添加其他商品
+            for (const category in menuItems) {
+                menuItems[category].forEach(item => {
+                    if (counts[item.id] > 0) {
+                        addItemToList(item.id, item.name[currentLanguage] || item.name.zh, item.price, counts[item.id]);
+                    }
+                });
+            }
+        }
+
+        // 添加商品到已选列表
+        function addItemToList(id, name, price, count) {
+            const itemElement = document.createElement('div');
+            itemElement.className = 'selected-item';
+            
+            const nameElement = document.createElement('span');
+            nameElement.textContent = `${name} × ${count}`;
+            
+            const priceElement = document.createElement('span');
+            priceElement.textContent = `${price * count}元`;
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-btn';
+            removeBtn.textContent = currentLanguage === 'zh' ? '删除' : 
+                                  currentLanguage === 'en' ? 'Remove' : '削除';
+            removeBtn.onclick = () => removeItem(id);
+            
+            itemElement.appendChild(nameElement);
+            itemElement.appendChild(priceElement);
+            itemElement.appendChild(removeBtn);
+            
+            selectedItemsList.appendChild(itemElement);
+        }
+
+        // 删除商品
+        function removeItem(id) {
+            counts[id] = 0;
+            if (selectedItemId === id) {
+                selectedItemCount.textContent = '0';
+            }
+            
+            // 如果是碟子，更新碟子计数器
+            const plateItem = plateItems.find(item => item.id === id);
+            if (plateItem) {
+                document.getElementById(`${id}-count`).textContent = '0';
+            }
+            
+            updateSelectedItemsList();
+            calculateTotal();
+        }
+
+        // 根据ID查找商品
+        function findItemById(id) {
+            // 检查是否是碟子
+            const plateItem = plateItems.find(item => item.id === id);
+            if (plateItem) return plateItem;
+            
+            // 检查其他商品
+            for (const category in menuItems) {
+                const foundItem = menuItems[category].find(item => item.id === id);
+                if (foundItem) return foundItem;
+            }
+            return null;
+        }
+
+        // 切换小红书点赞状态
+        function toggleSocial(choice) {
+            socialLike = choice;
+            document.getElementById('social-yes').classList.toggle('active', choice);
+            document.getElementById('social-no').classList.toggle('active', !choice);
+            calculateTotal();
+        }
+
+        // 计算总价
+        function calculateTotal() {
+            let total = 0;
+            for (const id in counts) {
+                total += counts[id] * prices[id];
+            }
+            
+            // 如果不点赞小红书，加收茶位费
+            if (!socialLike) {
+                total += teaFee;
+            }
+            
+            document.getElementById('total-price').textContent = total;
+            document.getElementById('total-price-en').textContent = total;
+            document.getElementById('total-price-ja').textContent = total;
+        }
+
+        // 切换语言
+        function changeLanguage(lang) {
+            currentLanguage = lang;
+            
+            // 更新语言按钮状态
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // 显示/隐藏对应语言内容
+            document.querySelectorAll('.multilingual').forEach(el => {
+                el.classList.remove('active');
+            });
+            document.querySelectorAll(`.lang-${lang}`).forEach(el => {
+                el.classList.add('active');
+            });
+            
+            // 更新下拉菜单选项
+            updateDropdownOptions();
+            
+            // 更新已选商品列表
+            updateSelectedItemsList();
+        }
+        
+        // 更新下拉菜单选项
+        function updateDropdownOptions() {
+            // 更新分类选择器
+            const categoryOptions = categorySelect.querySelectorAll('option');
+            categoryOptions.forEach(option => {
+                if (option.value === '') {
+                    option.textContent = currentLanguage === 'zh' ? '选择分类' : 
+                                       currentLanguage === 'en' ? 'Select Category' : 'カテゴリーを選択';
+                } else {
+                    const value = option.value;
+                    if (value === 'drink') {
+                        option.textContent = currentLanguage === 'zh' ? '饮料' : 
+                                           currentLanguage === 'en' ? 'Drinks' : 'ドリンク';
+                    } else if (value === 'fried') {
+                        option.textContent = currentLanguage === 'zh' ? '炸物' : 
+                                           currentLanguage === 'en' ? 'Fried Food' : '揚げ物';
+                    } else if (value === 'dessert') {
+                        option.textContent = currentLanguage === 'zh' ? '甜点' : 
+                                           currentLanguage === 'en' ? 'Desserts' : 'デザート';
+                    } else if (value === 'noodle') {
+                        option.textContent = currentLanguage === 'zh' ? '面类' : 
+                                           currentLanguage === 'en' ? 'Noodles' : '麺類';
+                    } else if (value === 'chawanmushi') {
+                        option.textContent = currentLanguage === 'zh' ? '茶碗蒸' : 
+                                           currentLanguage === 'en' ? 'Chawanmushi' : '茶碗蒸し';
+                    } else if (value === 'side') {
+                        option.textContent = currentLanguage === 'zh' ? '小食' : 
+                                           currentLanguage === 'en' ? 'Side Dishes' : 'サイドメニュー';
+                    } else if (value === 'sashimi') {
+                        option.textContent = currentLanguage === 'zh' ? '刺身' : 
+                                           currentLanguage === 'en' ? 'Sashimi' : '刺身';
+                    }
+                }
+            });
+            
+            // 更新商品选择器
+            const currentCategory = categorySelect.value;
+            if (currentCategory) {
+                const itemOptions = itemSelect.querySelectorAll('option');
+                itemOptions.forEach(option => {
+                    if (option.value === '') {
+                        option.textContent = currentLanguage === 'zh' ? '选择商品' : 
+                                           currentLanguage === 'en' ? 'Select Item' : '商品を選択';
+                    } else {
+                        const item = findItemById(option.value);
+                        if (item) {
+                            option.textContent = item.name[currentLanguage] || item.name.zh;
+                        }
+                    }
+                });
+            }
+            
+            // 更新当前选中商品的显示名称
+            if (selectedItemId) {
+                const item = findItemById(selectedItemId);
+                if (item) {
+                    selectedItemName.textContent = item.name[currentLanguage] || item.name.zh;
+                }
+            }
+        }
+        
+        // 返回顶部
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+        
+        // 初始化
+        updateDropdownOptions();
+    </script>
+</body>
+</html>
