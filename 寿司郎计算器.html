@@ -13,6 +13,24 @@
             --sushiro-dark-beige: #ffe8cc;
             --sushiro-black: #333333;
             --sushiro-white: #ffffff;
+            
+            /* Light theme colors */
+            --bg-color: var(--sushiro-beige);
+            --container-bg: var(--sushiro-white);
+            --text-color: var(--sushiro-black);
+            --border-color: var(--sushiro-dark-beige);
+            --header-bg: var(--sushiro-red);
+            --header-text: var(--sushiro-white);
+            --plate-bg: var(--sushiro-white);
+            
+            /* Dark theme colors */
+            --dark-bg-color: #1a1a1a;
+            --dark-container-bg: #2d2d2d;
+            --dark-text-color: #f0f0f0;
+            --dark-border-color: #444;
+            --dark-header-bg: #8a0000;
+            --dark-header-text: #f0f0f0;
+            --dark-plate-bg: #3d3d3d;
         }
         
         body {
@@ -20,27 +38,40 @@
             max-width: 500px;
             margin: 0 auto;
             padding: 0;
-            background-color: var(--sushiro-beige);
-            color: var(--sushiro-black);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        body.dark-theme {
+            --bg-color: var(--dark-bg-color);
+            --container-bg: var(--dark-container-bg);
+            --text-color: var(--dark-text-color);
+            --border-color: var(--dark-border-color);
+            --header-bg: var(--dark-header-bg);
+            --header-text: var(--dark-header-text);
+            --plate-bg: var(--dark-plate-bg);
         }
         
         .container {
             padding: 20px;
-            background-color: var(--sushiro-white);
+            background-color: var(--container-bg);
             border-radius: 10px;
             margin: 20px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            transition: background-color 0.3s;
         }
         
         header {
-            background-color: var(--sushiro-red);
-            color: var(--sushiro-white);
+            background-color: var(--header-bg);
+            color: var(--header-text);
             padding: 15px 0;
             text-align: center;
             border-radius: 10px 10px 0 0;
             margin-bottom: 20px;
             position: relative;
             overflow: hidden;
+            transition: background-color 0.3s, color 0.3s;
         }
         
         header::after {
@@ -51,6 +82,10 @@
             right: 0;
             height: 30px;
             background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M1200,0H0V120H1200V0Z" fill="%23e60012"/></svg>') center/cover no-repeat;
+        }
+        
+        .dark-theme header::after {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M1200,0H0V120H1200V0Z" fill="%238a0000"/></svg>') center/cover no-repeat;
         }
         
         h1 {
@@ -69,10 +104,14 @@
             border-radius: 50px;
         }
         
+        .dark-theme .language-selector {
+            background-color: #444;
+        }
+        
         .language-btn {
             background: none;
             border: none;
-            color: var(--sushiro-black);
+            color: var(--text-color);
             cursor: pointer;
             padding: 5px 15px;
             margin: 0 3px;
@@ -87,9 +126,9 @@
             font-weight: bold;
         }
         
-        /* 碟子样式 - 恢复原始样式 */
+        /* 碟子样式 */
         .plate {
-            background-color: var(--sushiro-white);
+            background-color: var(--plate-bg);
             border-radius: 8px;
             padding: 15px;
             margin-bottom: 15px;
@@ -97,9 +136,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid var(--sushiro-dark-beige);
+            border: 1px solid var(--border-color);
             position: relative;
             overflow: hidden;
+            transition: background-color 0.3s, border-color 0.3s;
         }
         
         .plate::before {
@@ -168,6 +208,10 @@
             color: #666;
         }
         
+        .dark-theme .plate-price {
+            color: #aaa;
+        }
+        
         .counter {
             display: flex;
             align-items: center;
@@ -213,13 +257,15 @@
             flex: 1;
             padding: 10px;
             border-radius: 5px;
-            border: 1px solid #ddd;
-            background-color: white;
+            border: 1px solid var(--border-color);
+            background-color: var(--container-bg);
             font-size: 14px;
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
         }
         
         .item-display {
-            background-color: var(--sushiro-white);
+            background-color: var(--container-bg);
             border-radius: 8px;
             padding: 15px;
             margin-bottom: 15px;
@@ -227,9 +273,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border: 1px solid var(--sushiro-dark-beige);
+            border: 1px solid var(--border-color);
             position: relative;
             overflow: hidden;
+            transition: background-color 0.3s, border-color 0.3s;
         }
         
         .item-display::before {
@@ -256,6 +303,10 @@
             color: #666;
         }
         
+        .dark-theme .item-price {
+            color: #aaa;
+        }
+        
         .selected-items {
             margin-top: 20px;
         }
@@ -264,7 +315,8 @@
             display: flex;
             justify-content: space-between;
             padding: 8px 0;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid var(--border-color);
+            transition: border-color 0.3s;
         }
         
         .remove-btn {
@@ -275,12 +327,13 @@
         }
         
         .social-check {
-            background-color: var(--sushiro-white);
+            background-color: var(--container-bg);
             border-radius: 8px;
             padding: 15px;
             margin: 15px 0;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            border: 1px solid var(--sushiro-dark-beige);
+            border: 1px solid var(--border-color);
+            transition: background-color 0.3s, border-color 0.3s;
         }
         
         .social-question {
@@ -298,8 +351,9 @@
         .social-btn {
             padding: 8px 15px;
             border-radius: 20px;
-            border: 1px solid #ddd;
-            background-color: white;
+            border: 1px solid var(--border-color);
+            background-color: var(--container-bg);
+            color: var(--text-color);
             cursor: pointer;
             transition: all 0.2s;
         }
@@ -315,6 +369,10 @@
             color: #666;
             margin-top: 5px;
             text-align: center;
+        }
+        
+        .dark-theme .social-note {
+            color: #aaa;
         }
         
         .total {
@@ -343,6 +401,11 @@
             border-radius: 5px;
         }
         
+        .dark-theme .note {
+            color: #aaa;
+            background-color: #444;
+        }
+        
         .multilingual {
             display: none;
         }
@@ -362,6 +425,10 @@
             color: #888;
         }
         
+        .dark-theme footer {
+            color: #aaa;
+        }
+        
         .scroll-to-top {
             position: fixed;
             bottom: 20px;
@@ -376,6 +443,24 @@
             justify-content: center;
             cursor: pointer;
             box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        
+        .theme-toggle {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            background-color: var(--sushiro-red);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border: none;
+            font-size: 20px;
         }
     </style>
 </head>
@@ -564,6 +649,7 @@
         </div>
     </div>
     
+    <button class="theme-toggle" onclick="toggleTheme()">🌓</button>
     <div class="scroll-to-top" onclick="scrollToTop()">↑</div>
     
     <footer>
@@ -1069,6 +1155,24 @@
                     id: 'sashimi-snail', 
                     name: {
                         zh: '海螺刺身',
+                        en: 'Sea Snail Sashimi',
+                        ja: 'つぶ貝刺身'
+                    }, 
+                    price: 18 
+                },
+                { 
+                    id: 'sashimi-mackerel', 
+                    name: {
+                        zh: '盐醋渍鲭鱼刺身',
+                        en: 'Salt and Vinegar Marinated Mackerel Sashimi',
+                        ja: 'しめ鯖'
+                    }, 
+                    price: 18 
+                },
+                { 
+                    id: 'sashimi-shrimp', 
+                    name: {
+                        zh: '甜虾刺身',
                         en: 'Sweet Shrimp Sashimi',
                         ja: '甘海老'
                     }, 
@@ -1160,7 +1264,8 @@
 
         // 当前语言
         let currentLanguage = 'zh';
-        
+        let darkTheme = false;
+
         // 初始化计数和价格
         const counts = {};
         const prices = {};
@@ -1191,6 +1296,7 @@
         const selectedItemPrice = document.getElementById('selected-item-price');
         const selectedItemCount = document.getElementById('selected-item-count');
         const selectedItemsList = document.getElementById('selected-items-list');
+        const body = document.body;
 
         // 分类选择变化时更新商品选项
         categorySelect.addEventListener('change', function() {
@@ -1389,63 +1495,65 @@
                 el.classList.add('active');
             });
             
-            // 更新下拉菜单选项
-            updateDropdownOptions();
-            
-            // 更新已选商品列表
-            updateSelectedItemsList();
-        }
-        
-        // 更新下拉菜单选项
-        function updateDropdownOptions() {
             // 更新分类选择器
-            const categoryOptions = categorySelect.querySelectorAll('option');
-            categoryOptions.forEach(option => {
-                if (option.value === '') {
-                    option.textContent = currentLanguage === 'zh' ? '选择分类' : 
-                                       currentLanguage === 'en' ? 'Select Category' : 'カテゴリーを選択';
-                } else {
-                    const value = option.value;
-                    if (value === 'drink') {
-                        option.textContent = currentLanguage === 'zh' ? '饮料' : 
-                                           currentLanguage === 'en' ? 'Drinks' : 'ドリンク';
-                    } else if (value === 'fried') {
-                        option.textContent = currentLanguage === 'zh' ? '炸物' : 
-                                           currentLanguage === 'en' ? 'Fried Food' : '揚げ物';
-                    } else if (value === 'dessert') {
-                        option.textContent = currentLanguage === 'zh' ? '甜点' : 
-                                           currentLanguage === 'en' ? 'Desserts' : 'デザート';
-                    } else if (value === 'noodle') {
-                        option.textContent = currentLanguage === 'zh' ? '面类' : 
-                                           currentLanguage === 'en' ? 'Noodles' : '麺類';
-                    } else if (value === 'chawanmushi') {
-                        option.textContent = currentLanguage === 'zh' ? '茶碗蒸' : 
-                                           currentLanguage === 'en' ? 'Chawanmushi' : '茶碗蒸し';
-                    } else if (value === 'side') {
-                        option.textContent = currentLanguage === 'zh' ? '小食' : 
-                                           currentLanguage === 'en' ? 'Side Dishes' : 'サイドメニュー';
-                    } else if (value === 'sashimi') {
-                        option.textContent = currentLanguage === 'zh' ? '刺身' : 
-                                           currentLanguage === 'en' ? 'Sashimi' : '刺身';
-                    }
+            updateSelectOptions(categorySelect, {
+                '': {
+                    zh: '选择分类',
+                    en: 'Select Category',
+                    ja: 'カテゴリーを選択'
+                },
+                'drink': {
+                    zh: '饮料',
+                    en: 'Drinks',
+                    ja: 'ドリンク'
+                },
+                'fried': {
+                    zh: '炸物',
+                    en: 'Fried Food',
+                    ja: '揚げ物'
+                },
+                'dessert': {
+                    zh: '甜点',
+                    en: 'Desserts',
+                    ja: 'デザート'
+                },
+                'noodle': {
+                    zh: '面类',
+                    en: 'Noodles',
+                    ja: '麺類'
+                },
+                'chawanmushi': {
+                    zh: '茶碗蒸',
+                    en: 'Chawanmushi',
+                    ja: '茶碗蒸し'
+                },
+                'side': {
+                    zh: '小食',
+                    en: 'Side Dishes',
+                    ja: 'サイドメニュー'
+                },
+                'sashimi': {
+                    zh: '刺身',
+                    en: 'Sashimi',
+                    ja: '刺身'
                 }
             });
             
             // 更新商品选择器
             const currentCategory = categorySelect.value;
             if (currentCategory) {
-                const itemOptions = itemSelect.querySelectorAll('option');
-                itemOptions.forEach(option => {
-                    if (option.value === '') {
-                        option.textContent = currentLanguage === 'zh' ? '选择商品' : 
-                                           currentLanguage === 'en' ? 'Select Item' : '商品を選択';
-                    } else {
-                        const item = findItemById(option.value);
-                        if (item) {
-                            option.textContent = item.name[currentLanguage] || item.name.zh;
-                        }
-                    }
-                });
+                itemSelect.innerHTML = '<option value="">' + 
+                    (currentLanguage === 'zh' ? '选择商品' : 
+                     currentLanguage === 'en' ? 'Select Item' : '商品を選択') + '</option>';
+                
+                if (currentCategory && menuItems[currentCategory]) {
+                    menuItems[currentCategory].forEach(item => {
+                        const option = document.createElement('option');
+                        option.value = item.id;
+                        option.textContent = item.name[currentLanguage] || item.name.zh;
+                        itemSelect.appendChild(option);
+                    });
+                }
             }
             
             // 更新当前选中商品的显示名称
@@ -1454,6 +1562,39 @@
                 if (item) {
                     selectedItemName.textContent = item.name[currentLanguage] || item.name.zh;
                 }
+            }
+            
+            // 更新已选商品列表
+            updateSelectedItemsList();
+        }
+        
+        // 更新选择框选项
+        function updateSelectOptions(selectElement, optionsMap) {
+            const currentValue = selectElement.value;
+            selectElement.innerHTML = '';
+            
+            for (const [value, translations] of Object.entries(optionsMap)) {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = translations[currentLanguage] || translations.zh;
+                selectElement.appendChild(option);
+            }
+            
+            // 恢复之前选中的值
+            if (currentValue && selectElement.querySelector(`option[value="${currentValue}"]`)) {
+                selectElement.value = currentValue;
+            }
+        }
+        
+        // 切换主题
+        function toggleTheme() {
+            darkTheme = !darkTheme;
+            if (darkTheme) {
+                body.classList.add('dark-theme');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.classList.remove('dark-theme');
+                localStorage.setItem('theme', 'light');
             }
         }
         
@@ -1466,7 +1607,66 @@
         }
         
         // 初始化
-        updateDropdownOptions();
+        function initialize() {
+            // 检查保存的主题偏好
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                darkTheme = true;
+                body.classList.add('dark-theme');
+            }
+            
+            // 设置分类选择器的默认选项
+            updateSelectOptions(categorySelect, {
+                '': {
+                    zh: '选择分类',
+                    en: 'Select Category',
+                    ja: 'カテゴリーを選択'
+                },
+                'drink': {
+                    zh: '饮料',
+                    en: 'Drinks',
+                    ja: 'ドリンク'
+                },
+                'fried': {
+                    zh: '炸物',
+                    en: 'Fried Food',
+                    ja: '揚げ物'
+                },
+                'dessert': {
+                    zh: '甜点',
+                    en: 'Desserts',
+                    ja: 'デザート'
+                },
+                'noodle': {
+                    zh: '面类',
+                    en: 'Noodles',
+                    ja: '麺類'
+                },
+                'chawanmushi': {
+                    zh: '茶碗蒸',
+                    en: 'Chawanmushi',
+                    ja: '茶碗蒸し'
+                },
+                'side': {
+                    zh: '小食',
+                    en: 'Side Dishes',
+                    ja: 'サイドメニュー'
+                },
+                'sashimi': {
+                    zh: '刺身',
+                    en: 'Sashimi',
+                    ja: '刺身'
+                }
+            });
+            
+            // 设置商品选择器的默认选项
+            itemSelect.innerHTML = '<option value="">' + 
+                (currentLanguage === 'zh' ? '选择商品' : 
+                 currentLanguage === 'en' ? 'Select Item' : '商品を選択') + '</option>';
+        }
+        
+        // 页面加载时初始化
+        window.onload = initialize;
     </script>
 </body>
 </html>
